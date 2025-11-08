@@ -91,11 +91,17 @@ class Item (BaseModel):
     price: float
     tax: float | None = None
 
+# Si el parametro esta en la ruta sera un path parameter
+# Si el parametro esta basado en una calse con BaseModel sera un body
+# Si el parametro es de un tipo primitivo sera un query param
+
 @app.post("/items/{item_id}")
-async def create_item(item_id: int, item: Item):
+async def create_item(item_id: int, item: Item, q: str | None = None):
     item_dict = item.model_dump()
     if item.tax is not None:
         price_with_tax = item.price + item.tax
         item_dict.update({"price_with_tax": price_with_tax})
     item_dict.update({"item_id": item_id})
+    if q:
+        item_dict.update({"q": q})
     return item_dict
