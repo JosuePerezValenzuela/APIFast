@@ -1,6 +1,6 @@
 from enum import Enum
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Path
 
 from typing import Annotated
 
@@ -143,3 +143,18 @@ async def read_items4(
     ):
     query_items = {"q": q, "id": id}
     return query_items
+
+@app.get("/items5/{item_id}")
+async def read_item5(item_id: Annotated[int, Path(
+    title="The Id of the item to get",
+    ge=1,
+    le=1000
+    )],
+                    size: Annotated[float, Query(gt=0, lt=10.5)],
+                    q: Annotated[str | None, Query(alias="item-query")] = None,
+    ):
+    results = {"item_id": item_id}
+    results.update({"size": size})
+    if q:
+        results.update({"q": q})
+    return results
