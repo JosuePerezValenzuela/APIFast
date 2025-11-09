@@ -1,6 +1,8 @@
 from enum import Enum
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
+
+from typing import Annotated
 
 from pydantic import BaseModel
 
@@ -92,11 +94,17 @@ class Item (BaseModel):
     tax: float | None = None
 
 # Si el parametro esta en la ruta sera un path parameter
-# Si el parametro esta basado en una calse con BaseModel sera un body
+# Si el parametro esta basado en una clase con BaseModel sera un body
 # Si el parametro es de un tipo primitivo sera un query param
 
 @app.post("/items/{item_id}")
-async def create_item(item_id: int, item: Item, q: str | None = None):
+async def create_item(
+        item_id: int, 
+        item: Item, 
+        #Validar que q sea maximo de 50 caracteres
+        #El tener un valor por defecto hace que el parametro sea opcional
+        q: Annotated[str | None, Query(min_length=3, max_length=50, pattern="^fixedquery$")] = "fixedquery"
+    ):
     item_dict = item.model_dump()
     if item.tax is not None:
         price_with_tax = item.price + item.tax
