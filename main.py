@@ -4,7 +4,7 @@ from fastapi import FastAPI, Query
 
 from typing import Annotated
 
-from pydantic import BaseModel
+from pydantic import BaseModel, AfterValidator
 
 class ModelName(str, Enum):
     alexnet = "alexnet"
@@ -114,6 +114,15 @@ async def create_item(
         item_dict.update({"q": q})
     return item_dict
 
+#Crear validadores (funciones) personalizados que seran usados despues o antes 
+# de las validaciones comunes (BeforeValidator y AfterValidator) dentro de 
+# Annotated
+
+def check_valid_id(id: str):
+    if not id.startswith(("isbn-", "imdb-")):
+        raise ValueError('Invalid ID format, it must start withc "isbn-" or "imdb-"')
+    return id
+
 #Multiples valores de q en la ruta, se debe declarar con Query() para que no
 #sea considerado un body
 @app.get("/items4/")
@@ -123,12 +132,14 @@ async def read_items4(
                 alias="item-query",
                 title="Query string",
                 description="Query string que recibe una lista",
-                min_length=3,
+                min_length=2,
                 #Mostrar que un endpoint esta deprecado
                 deprecated=True,
                 #Ocultara este parametro en la documentacion
                 include_in_schema=False,
                 )
-        ] = ["foo", "bar"]):
-    query_items = {"q": q}
+        ] = ["foo", "bar"],
+        id: Annotated[str | None, AfterValidator(check_valid_id)] = None
+    ):
+    query_items = {"q": q, "id": id}
     return query_items
