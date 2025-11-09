@@ -113,3 +113,22 @@ async def create_item(
     if q:
         item_dict.update({"q": q})
     return item_dict
+
+#Multiples valores de q en la ruta, se debe declarar con Query() para que no
+#sea considerado un body
+@app.get("/items4/")
+async def read_items4(
+        q: Annotated[list[str] | None, 
+            Query(
+                alias="item-query",
+                title="Query string",
+                description="Query string que recibe una lista",
+                min_length=3,
+                #Mostrar que un endpoint esta deprecado
+                deprecated=True,
+                #Ocultara este parametro en la documentacion
+                include_in_schema=False,
+                )
+        ] = ["foo", "bar"]):
+    query_items = {"q": q}
+    return query_items
