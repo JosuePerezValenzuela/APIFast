@@ -2,9 +2,9 @@ from enum import Enum
 
 from fastapi import FastAPI, Query, Path
 
-from typing import Annotated
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, AfterValidator
+from pydantic import BaseModel, AfterValidator, Field
 
 class ModelName(str, Enum):
     alexnet = "alexnet"
@@ -158,3 +158,13 @@ async def read_item5(item_id: Annotated[int, Path(
     if q:
         results.update({"q": q})
     return results
+
+class FilterParams(BaseModel):
+    limit: int = Field(100, gt=0, le=100)
+    offset: int = Field(0, ge=0)
+    order_by: Literal["created_at", "updated_at"] = "created_at"
+    tags: list[str] = []
+
+@app.get("/items6/")
+async def read_items6(filter_query: Annotated[FilterParams, Query()]):
+    return filter_query
