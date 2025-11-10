@@ -160,6 +160,9 @@ async def read_item5(item_id: Annotated[int, Path(
     return results
 
 class FilterParams(BaseModel):
+    #Reestringir parametros extra de consulta que manden
+    model_config = {"extra": "forbid"}
+
     limit: int = Field(100, gt=0, le=100)
     offset: int = Field(0, ge=0)
     order_by: Literal["created_at", "updated_at"] = "created_at"
