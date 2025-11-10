@@ -1,6 +1,6 @@
 from enum import Enum
 
-from fastapi import FastAPI, Query, Path
+from fastapi import FastAPI, Query, Path, Body
 
 from typing import Annotated, Literal
 
@@ -171,3 +171,20 @@ class FilterParams(BaseModel):
 @app.get("/items6/")
 async def read_items6(filter_query: Annotated[FilterParams, Query()]):
     return filter_query
+
+class User(BaseModel):
+    username: str
+    full_name: str | None = None
+
+@app.put("/items/{item_id}")
+async def update_item(
+    item_id: Annotated[int, Path(title="The ID of the item to get", ge=0, le=1000)],
+    item: Item,
+    user: User,
+    importance: Annotated[int, Body()],
+    q: str | None = None
+):
+    results = {"item_id": item_id, "item": item, "user": user, "importance": importance}
+    if q:
+        results.update({"q": q})
+    return results
