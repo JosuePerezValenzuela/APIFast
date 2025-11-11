@@ -2,9 +2,9 @@ from enum import Enum
 
 from fastapi import FastAPI, Query, Path, Body
 
-from typing import Annotated, Literal, List
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, AfterValidator, Field
+from pydantic import BaseModel, AfterValidator, Field, HttpUrl
 
 class ModelName(str, Enum):
     alexnet = "alexnet"
@@ -190,7 +190,7 @@ async def update_item(
     return results
 
 class Image(BaseModel):
-    url: str
+    url: HttpUrl
     name: str
 
 class Item2(BaseModel):
@@ -203,7 +203,13 @@ class Item2(BaseModel):
     )
     tax: float | None = None
     tags: set[str] = set()
-    image: Image | None = None
+    images: list[Image] | None = None
+
+class Offer(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    items: list[Item2]
 
 @app.put("/items2/{item_id}")
 async def update_item2(
@@ -212,3 +218,7 @@ async def update_item2(
 ):
     results = {"item_id": item_id, "item": item}
     return results
+
+@app.post("/offers/")
+async def create_offer(offer: Offer):
+    return offer
