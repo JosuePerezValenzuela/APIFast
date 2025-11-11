@@ -2,7 +2,7 @@ from enum import Enum
 
 from fastapi import FastAPI, Query, Path, Body
 
-from typing import Annotated, Literal
+from typing import Annotated, Literal, List
 
 from pydantic import BaseModel, AfterValidator, Field
 
@@ -189,6 +189,10 @@ async def update_item(
         results.update({"q": q})
     return results
 
+class Image(BaseModel):
+    url: str
+    name: str
+
 class Item2(BaseModel):
     name: str
     description: str | None = Field(
@@ -198,6 +202,8 @@ class Item2(BaseModel):
         gt=0, description="The price must be greater than zero"
     )
     tax: float | None = None
+    tags: set[str] = set()
+    image: Image | None = None
 
 @app.put("/items2/{item_id}")
 async def update_item2(
