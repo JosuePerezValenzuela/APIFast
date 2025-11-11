@@ -188,3 +188,21 @@ async def update_item(
     if q:
         results.update({"q": q})
     return results
+
+class Item2(BaseModel):
+    name: str
+    description: str | None = Field(
+        default=None, title="The description of the item", max_length=300
+    )
+    price: float = Field(
+        gt=0, description="The price must be greater than zero"
+    )
+    tax: float | None = None
+
+@app.put("/items2/{item_id}")
+async def update_item2(
+    item_id: int,
+    item: Annotated[Item2, Body(embed=True)]
+):
+    results = {"item_id": item_id, "item": item}
+    return results
