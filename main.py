@@ -93,6 +93,19 @@ class Item (BaseModel):
     price: float
     tax: float | None = None
 
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "name": "Foo",
+                    "description": "A very nice Item",
+                    "price": 35.4,
+                    "tax": 3.2,
+                }
+            ]
+        }
+    }
+
 # Si el parametro esta en la ruta sera un path parameter
 # Si el parametro esta basado en una clase con BaseModel sera un body
 # Si el parametro es de un tipo primitivo sera un query param
@@ -194,14 +207,15 @@ class Image(BaseModel):
     name: str
 
 class Item2(BaseModel):
-    name: str
+    name: str = Field(examples=["Foo"])
     description: str | None = Field(
-        default=None, title="The description of the item", max_length=300
+        default=None, title="The description of the item", max_length=300,
+        examples=[3.2]
     )
     price: float = Field(
-        gt=0, description="The price must be greater than zero"
+        gt=0, description="The price must be greater than zero", examples=[3.2]
     )
-    tax: float | None = None
+    tax: float | None = Field(default=None, examples=[3, 2])
     tags: set[str] = set()
     images: list[Image] | None = None
 
@@ -230,3 +244,20 @@ async def create_multiple_images(images: list[Image]):
 @app.post("/index-weights/")
 async def create_index_weights(weights: dict[int, float]):
     return weights
+
+@app.put("/items3/{item_id}")
+async def update_item3(
+    item_id: int,
+    item: Annotated[Item, Body(
+        examples=[
+            {
+                "name": "Fooo",
+                "description": "New description",
+                "price": 20.04,
+                "tax": 5.5,
+            }
+        ]
+    )]
+):
+    results = {"item_id": item_id, "item": item}
+    return results
