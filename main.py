@@ -378,3 +378,16 @@ async def read_items8(
     x_token: Annotated[list[str] | None, Header()] = None
 ):
     return {"User-Agent": user_agent, "X-Token values": x_token}
+
+class Cookies(BaseModel):
+    model_config = {"extra": "forbid"}
+    
+    session_id: str
+    fatebook_tracker: str | None = None
+    googall_tracker: str | None = None
+
+@app.get("/items9/")
+async def read_items9(
+    cookies: Annotated[Cookies, Cookie()]
+):
+    return cookies
