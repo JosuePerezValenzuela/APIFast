@@ -446,8 +446,19 @@ class UserIn(BaseModel):
     email: EmailStr
     full_name: str | None = None
 
+class UserOut(BaseModel):
+    username: str
+    email: EmailStr
+    full_name: str | None = None
+
 @app.post("/user/")
 async def create_user(
     user: UserIn
 ) -> UserIn:
+    return user
+
+@app.post("/user2/", response_model=UserOut)
+async def create_user2(
+    user: UserIn
+) -> Any:
     return user
