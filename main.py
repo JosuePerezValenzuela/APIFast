@@ -394,7 +394,7 @@ async def read_items9(
 
 class CommonHeaders(BaseModel):
     model_config = {"extra": "forbid"}
-    
+
     host: str
     save_data: bool
     if_modified_since: str | None = None
@@ -406,3 +406,23 @@ async def read_items10(
     headers: Annotated[CommonHeaders, Header()]
 ):
     return headers
+
+class Item4(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
+    tags: list[str] = []
+
+@app.post("/items2/")
+async def create_item2(
+    item: Item
+) -> Item:
+    return item
+
+@app.get("/items11/")
+async def read_items11() -> list[Item4]:
+    return [
+        Item4(name="Porta Gun", price=42.0),
+        Item4(name="Plumbus", price=32.0)
+    ]
