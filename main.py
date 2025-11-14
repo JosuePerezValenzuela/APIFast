@@ -4,7 +4,7 @@ from fastapi import FastAPI, Query, Path, Body, Cookie, Header
 
 from typing import Annotated, Literal, Any
 
-from pydantic import BaseModel, AfterValidator, Field, HttpUrl
+from pydantic import BaseModel, AfterValidator, Field, HttpUrl, EmailStr
 
 from datetime import datetime, time, timedelta
 
@@ -439,3 +439,15 @@ async def read_items12() -> Any:
         {"name": "Portal Gun", "price": 42.0},
         Item4(name="Plumbus", price=32.0)
     ]
+
+class UserIn(BaseModel):
+    username: str
+    password: str
+    email: EmailStr
+    full_name: str | None = None
+
+@app.post("/user/")
+async def create_user(
+    user: UserIn
+) -> UserIn:
+    return user
