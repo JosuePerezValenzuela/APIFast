@@ -6,6 +6,10 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, AfterValidator, Field, HttpUrl
 
+from datetime import datetime, time, timedelta
+
+from uuid import UUID
+
 class ModelName(str, Enum):
     alexnet = "alexnet"
     resnet = "resnet"
@@ -306,3 +310,56 @@ async def update_item4(
 ):
     results = {"item_id": item_id, "item": item}
     return results
+
+"""
+Tipos de datos extras
+
+UUID -> Universal Unique Identifier o los ID de las BD, representados
+        como cadenas
+
+datetime.datetime -> Un datetime.datetime de python, en las solicitudos
+        y respuestas sera representado como un str con la ISO 8601
+
+datetime.date -> Un datetime.date de Python, representado como str
+        con la ISO 8601
+
+datetime.time -> Un datetime.time de Python, representado como str con
+        la ISO 8601
+
+datetime.timedelta -> Un datetime.timedelta de Python, representado como
+        float del total de segundos respetando la ISO 8601
+
+frozenset -> Tratado como un set, 
+        En la solicitud se leera como una lista eliminando duplicados y
+        convirtiendolos en set
+
+        En la respuesta sera convertido de set a una lista
+
+        El esquema generado especificara que los valores son unicos usando
+        uniqueItems de JSON Schemas's
+
+bytes -> bytes de Python, tratados como str, el esquema generado especifica
+        que es un str con formato binario
+
+Decimal -> Decimal estandar de python, tratado como float
+"""
+
+@app.put("/items5/{item_id}")
+async def read_items5(
+    item_id: UUID,
+    start_datetime: Annotated[datetime, Body()],
+    end_datetime: Annotated[datetime, Body()],
+    process_after: Annotated[timedelta, Body()],
+    repeat_at: Annotated[time | None, Body()] = None,
+):
+    start_process = start_datetime + process_after
+    duration = end_datetime - start_process
+    return {
+        "item_id": item_id,
+        "start_datetime": start_datetime,
+        "end_datetime": end_datetime,
+        "process_after": process_after,
+        "repeat_at": repeat_at,
+        "start_process": start_process,
+        "duration": duration,
+    }
