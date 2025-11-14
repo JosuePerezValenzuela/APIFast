@@ -1,6 +1,6 @@
 from enum import Enum
 
-from fastapi import FastAPI, Query, Path, Body, Cookie
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header
 
 from typing import Annotated, Literal
 
@@ -369,3 +369,12 @@ async def read_items7(
     ads_id: Annotated[str | None, Cookie()] = None
 ):
     return {"ads_id": ads_id}
+
+# Header ofrece pequeñas extras funcionalidades aparte de las base de Path,
+# Query y Cookie, por estandar estan separadas por un " - "
+@app.get("/items8/")
+async def read_items8(
+    user_agent: Annotated[str | None, Header()] = None,
+    x_token: Annotated[list[str] | None, Header()] = None
+):
+    return {"User-Agent": user_agent, "X-Token values": x_token}
