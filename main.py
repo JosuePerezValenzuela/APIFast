@@ -1,6 +1,6 @@
 from enum import Enum
 
-from fastapi import FastAPI, Query, Path, Body
+from fastapi import FastAPI, Query, Path, Body, Cookie
 
 from typing import Annotated, Literal
 
@@ -363,3 +363,9 @@ async def read_items5(
         "start_process": start_process,
         "duration": duration,
     }
+
+@app.get("/items7/")
+async def read_items7(
+    ads_id: Annotated[str | None, Cookie()] = None
+):
+    return {"ads_id": ads_id}
