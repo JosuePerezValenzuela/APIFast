@@ -101,6 +101,10 @@ class Item (BaseModel):
                     "description": "A very nice Item",
                     "price": 35.4,
                     "tax": 3.2,
+                },
+                {
+                    "name": "Bar",
+                    "price": "35.4"
                 }
             ]
         }
@@ -255,9 +259,50 @@ async def update_item3(
                 "description": "New description",
                 "price": 20.04,
                 "tax": 5.5,
+            },
+            {
+                "name": "Bar",
+                "price": "38.4"
+                
             }
         ]
     )]
+):
+    results = {"item_id": item_id, "item": item}
+    return results
+
+@app.put("/items4/{item_id}")
+async def update_item4(
+    item_id: int,
+    item: Annotated[Item, Body(
+        openapi_examples={
+            "normal": {
+                "summary": "A normal example",
+                "description": "A **normal** item works correctly",
+                "value": {
+                    "name": "Fooo",
+                    "description": "A very nice item",
+                    "price": "35.4",
+                    "tax": 3.2,
+                },
+            },
+            "coverted": {
+                "summary": "An example with coverted data",
+                "description": "FastApi can convert price `strings` to actual numbers",
+                "value": {
+                    "name": "Bar",
+                    "price": "35.4",
+                },
+            },
+            "invalid": {
+                "summary": "Invalid data is rejected with an error",
+                "value": {
+                    "name": "Baz",
+                    "price": "Thirty five point four"
+                },
+            },
+        },
+    )],
 ):
     results = {"item_id": item_id, "item": item}
     return results
