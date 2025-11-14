@@ -381,7 +381,7 @@ async def read_items8(
 
 class Cookies(BaseModel):
     model_config = {"extra": "forbid"}
-    
+
     session_id: str
     fatebook_tracker: str | None = None
     googall_tracker: str | None = None
@@ -391,3 +391,18 @@ async def read_items9(
     cookies: Annotated[Cookies, Cookie()]
 ):
     return cookies
+
+class CommonHeaders(BaseModel):
+    model_config = {"extra": "forbid"}
+    
+    host: str
+    save_data: bool
+    if_modified_since: str | None = None
+    traceparent: str | None = None
+    x_tag: list[str] = []
+
+@app.get("/items10/")
+async def read_items10(
+    headers: Annotated[CommonHeaders, Header()]
+):
+    return headers
