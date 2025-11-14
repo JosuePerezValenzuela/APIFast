@@ -2,7 +2,7 @@ from enum import Enum
 
 from fastapi import FastAPI, Query, Path, Body, Cookie, Header
 
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Any
 
 from pydantic import BaseModel, AfterValidator, Field, HttpUrl
 
@@ -416,13 +416,26 @@ class Item4(BaseModel):
 
 @app.post("/items2/")
 async def create_item2(
-    item: Item
-) -> Item:
+    item: Item4
+) -> Item4:
     return item
 
 @app.get("/items11/")
 async def read_items11() -> list[Item4]:
     return [
         Item4(name="Porta Gun", price=42.0),
+        Item4(name="Plumbus", price=32.0)
+    ]
+
+@app.post("/items3/", response_model=Item4)
+async def create_item3(
+    item: Item4
+) -> Any:
+    return item
+
+@app.get("/items12/", response_model=list[Item4])
+async def read_items12() -> Any:
+    return [
+        {"name": "Portal Gun", "price": 42.0},
         Item4(name="Plumbus", price=32.0)
     ]
